@@ -18,11 +18,11 @@ const Navbar = ({ showSidebar = false }) => {
 
   const navLinks = username
     ? [
-        { label: '🏠 Inicio', path: '/app' },
-        { label: '🥗 Mi Dieta', path: '/app' },
-        { label: '🏋️ Mis Ejercicios', path: '/app/ejercicios' },
-        { label: '📋 Rutinas', path: '/app' },
-        { label: '💊 Suplementación', path: '/app' },
+        { label: 'Inicio', path: '/app' },
+        { label: 'Mi Dieta', path: '/app' },
+        { label: 'Mis Ejercicios', path: '/app/ejercicios' },
+        { label: 'Rutinas', path: '/app' },
+        { label: 'Suplementación', path: '/app' },
       ]
     : [
         { label: 'Inicio', path: '/' },
