@@ -377,7 +377,21 @@ form {
     transition: opacity 0.2s;
 }
 
-.error-btn:hover { opacity: 0.85; }
+.error-btn:hover { 
+    opacity: 0.85; 
+}
+
+.auth-error {
+  color: #ff4444;
+  font-size: 13px;
+  text-align: center;
+}
+
+.auth-success {
+  color: #44bb44;
+  font-size: 13px;
+  text-align: center;
+}
 
 /* ===== ANIMACION ===== */
 @keyframes fadeUp {
@@ -387,11 +401,12 @@ form {
 
 @media (max-width: 600px) {
     .dashboard-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
+        grid-template-columns: 1fr;
+        gap: 20px;
     }
 
     .dashboard-main {
-    padding: 82px 20px 32px;
+        padding: 82px 20px 32px;
     }
+    
 }

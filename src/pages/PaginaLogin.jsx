@@ -5,16 +5,24 @@ import { useAuth } from '../data/authContext.jsx'
 import './Paginas.css'
 
 const PaginaLogin = () => {
-  const [usuario, setUsuario] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState(null)
+  const [cargando, setCargando] = useState(false)
   const { login } = useAuth()
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (usuario.trim()) {
-      login(usuario)
+    setError(null)
+    setCargando(true)
+    try {
+      await login(email, password)
       navigate('/app')
+    } catch (err) {
+      setError('Email o contraseña incorrectos')
+    } finally {
+      setCargando(false)
     }
   }
 
@@ -35,11 +43,11 @@ const PaginaLogin = () => {
           <h2>Iniciar Sesión</h2>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Usuario</label>
+              <label>Email</label>
               <input
-                type="text"
-                value={usuario}
-                onChange={e => setUsuario(e.target.value)}
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
                 required
               />
             </div>
@@ -49,10 +57,12 @@ const PaginaLogin = () => {
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
+                required
               />
             </div>
-            <button type="submit" className="auth-primary-btn">
-              Iniciar Sesión
+            {error && <p className="auth-error">{error}</p>}
+            <button type="submit" className="auth-primary-btn" disabled={cargando}>
+              {cargando ? 'Entrando...' : 'Iniciar Sesión'}
             </button>
           </form>
           <Link to="/registro" className="auth-link">

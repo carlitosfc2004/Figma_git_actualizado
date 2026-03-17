@@ -6,16 +6,37 @@ import './Paginas.css'
 
 const PaginaRegistro = () => {
   const [email, setEmail] = useState('')
-  const [usuario, setUsuario] = useState('')
   const [password, setPassword] = useState('')
-  const { login } = useAuth()
+  const [confirmar, setConfirmar] = useState('')
+  const [error, setError] = useState(null)
+  const [mensaje, setMensaje] = useState(null)
+  const [cargando, setCargando] = useState(false)
+  const { registro } = useAuth()
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (usuario.trim()) {
-      login(usuario)
-      navigate('/app')
+    setError(null)
+    setMensaje(null)
+
+    if (password !== confirmar) {
+      setError('Las contraseñas no coinciden')
+      return
+    }
+
+    if (password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres')
+      return
+    }
+
+    setCargando(true)
+    try {
+      await registro(email, password)
+      setMensaje('Registro exitoso, revisa tu email para confirmar la cuenta')
+    } catch (err) {
+      setError('Error al registrarse, prueba con otro email')
+    } finally {
+      setCargando(false)
     }
   }
 
@@ -36,20 +57,11 @@ const PaginaRegistro = () => {
           <h2>Registrarse</h2>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Correo Electrónico</label>
+              <label>Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label>Usuario</label>
-              <input
-                type="text"
-                value={usuario}
-                onChange={e => setUsuario(e.target.value)}
                 required
               />
             </div>
@@ -59,12 +71,27 @@ const PaginaRegistro = () => {
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
+                required
               />
             </div>
-            <button type="submit" className="auth-primary-btn">
-              Registrarse
+            <div className="form-group">
+              <label>Confirmar Contraseña</label>
+              <input
+                type="password"
+                value={confirmar}
+                onChange={e => setConfirmar(e.target.value)}
+                required
+              />
+            </div>
+            {error && <p className="auth-error">{error}</p>}
+            {mensaje && <p className="auth-success">{mensaje}</p>}
+            <button type="submit" className="auth-primary-btn" disabled={cargando}>
+              {cargando ? 'Registrando...' : 'Registrarse'}
             </button>
           </form>
+          <Link to="/login" className="auth-link">
+            ¿Ya tienes cuenta? Inicia sesión.
+          </Link>
         </div>
       </div>
     </div>
