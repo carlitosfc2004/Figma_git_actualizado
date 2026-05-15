@@ -1,16 +1,23 @@
 import './DarkModeToggle.css'
-import { useAuth } from '../data/authContext.jsx'
+import { useAuthStore } from '../stores/useAuthStore.js'
 
 const DarkModeToggle = () => {
-  const { isDark, toggleDark } = useAuth()
+  const isDark = useAuthStore((s) => s.isDark)
+  const toggleDark = useAuthStore((s) => s.toggleDark)
 
   return (
-    <div className="toggle-wrapper" onClick={toggleDark}>
-        <span className="toggle-label">Modo Oscuro</span>
-        <div className={`toggle-track ${isDark ? 'on' : 'off'}`}>
-            <div className="toggle-knob" />
-        </div>
-    </div>
+    <button
+      className="toggle-wrapper"
+      onClick={toggleDark}
+      role="switch"
+      aria-checked={isDark}
+      aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+    >
+      <span className="toggle-label">{isDark ? 'Oscuro' : 'Claro'}</span>
+      <div className={`toggle-track ${isDark ? 'on' : 'off'}`} aria-hidden="true">
+        <div className="toggle-knob" />
+      </div>
+    </button>
   )
 }
 

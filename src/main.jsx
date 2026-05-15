@@ -6,10 +6,10 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
   Route,
-  RouterProvider
+  RouterProvider,
 } from 'react-router-dom'
 
-import { AuthProvider } from './data/authContext.jsx'
+import { useAuthStore } from './stores/useAuthStore.js'
 import PaginaInicio from './pages/PaginaInicio.jsx'
 import PaginaLogin from './pages/PaginaLogin.jsx'
 import PaginaRegistro from './pages/PaginaRegistro.jsx'
@@ -17,7 +17,13 @@ import PaginaApp from './pages/PaginaApp.jsx'
 import PaginaEjercicios from './pages/PaginaEjercicios.jsx'
 import PaginaEjercicioDetalle from './pages/PaginaEjercicioDetalle.jsx'
 import PaginaEjercicioForm from './pages/PaginaEjercicioForm.jsx'
+import PaginaRutinas from './pages/PaginaRutinas.jsx'
+import PaginaRutinaDetalle from './pages/PaginaRutinaDetalle.jsx'
+import PaginaRutinaForm from './pages/PaginaRutinaForm.jsx'
 import PaginaError from './pages/PaginaError.jsx'
+
+// Inicializa el listener de autenticación antes de renderizar
+useAuthStore.getState().init()
 
 const miRouter = createBrowserRouter(
   createRoutesFromElements(
@@ -30,6 +36,10 @@ const miRouter = createBrowserRouter(
       <Route path='/app/ejercicios/nuevo' element={<PaginaEjercicioForm />} />
       <Route path='/app/ejercicios/:id' element={<PaginaEjercicioDetalle />} />
       <Route path='/app/ejercicios/:id/editar' element={<PaginaEjercicioForm />} />
+      <Route path='/app/rutinas' element={<PaginaRutinas />} />
+      <Route path='/app/rutinas/nueva' element={<PaginaRutinaForm />} />
+      <Route path='/app/rutinas/:id' element={<PaginaRutinaDetalle />} />
+      <Route path='/app/rutinas/:id/editar' element={<PaginaRutinaForm />} />
       <Route path='*' element={<PaginaError />} />
     </>
   )
@@ -37,8 +47,6 @@ const miRouter = createBrowserRouter(
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <AuthProvider>
-      <RouterProvider router={miRouter} />
-    </AuthProvider>
+    <RouterProvider router={miRouter} />
   </StrictMode>,
 )

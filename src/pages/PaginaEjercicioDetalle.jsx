@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../data/supabase.js'
-import { useAuth } from '../data/authContext.jsx'
+import { useAuthStore } from '../stores/useAuthStore.js'
 import Navbar from '../components/Navbar.jsx'
 import './Paginas.css'
 
 const PaginaEjercicioDetalle = () => {
   const { id } = useParams()
-  const { user } = useAuth()
+  const user = useAuthStore((s) => s.user)
   const navigate = useNavigate()
   const [ejercicio, setEjercicio] = useState(null)
   const [cargando, setCargando] = useState(true)
@@ -40,27 +40,27 @@ const PaginaEjercicioDetalle = () => {
 
   return (
     <div className="list-page">
-      <div className="dashboard-bg" />
-      <div className="dashboard-overlay" />
+      <div className="dashboard-bg" aria-hidden="true" />
+      <div className="dashboard-overlay" aria-hidden="true" />
       <Navbar showSidebar={true} />
 
-      <main className="detalle-main">
-        <button className="back-btn" onClick={() => navigate('/app/ejercicios')}>
+      <main className="detalle-main" id="main-content">
+        <button className="back-btn" onClick={() => navigate('/app/ejercicios')} aria-label="Volver a la lista de ejercicios">
           ← Volver a ejercicios
         </button>
 
         {cargando ? (
-          <div className="list-empty">
-            <span className="list-empty-icon">⏳</span>
+          <div className="list-empty" role="status" aria-live="polite">
+            <span className="list-empty-icon" aria-hidden="true">⏳</span>
             <p>Cargando...</p>
           </div>
         ) : error ? (
-          <div className="list-empty">
-            <span className="list-empty-icon">❌</span>
+          <div className="list-empty" role="alert">
+            <span className="list-empty-icon" aria-hidden="true">❌</span>
             <p>{error}</p>
           </div>
         ) : (
-          <div className="detalle-card">
+          <article className="detalle-card" aria-label={`Detalle del ejercicio: ${ejercicio.nombre}`}>
             {ejercicio.imagen && (
               <div className="detalle-img-wrapper">
                 <img src={ejercicio.imagen} alt={ejercicio.nombre} />
@@ -95,12 +95,13 @@ const PaginaEjercicioDetalle = () => {
                 <button
                   className="detalle-delete-btn"
                   onClick={eliminar}
+                  aria-label={`Eliminar ejercicio ${ejercicio.nombre}`}
                 >
                   🗑️ Eliminar
                 </button>
               </div>
             </div>
-          </div>
+          </article>
         )}
       </main>
     </div>

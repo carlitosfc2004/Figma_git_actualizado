@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar.jsx'
-import { useAuth } from '../data/authContext.jsx'
+import { useAuthStore } from '../stores/useAuthStore.js'
 import './Paginas.css'
 
 const PaginaLogin = () => {
@@ -9,7 +9,7 @@ const PaginaLogin = () => {
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
   const [cargando, setCargando] = useState(false)
-  const { login } = useAuth()
+  const login = useAuthStore((s) => s.login)
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
@@ -19,7 +19,7 @@ const PaginaLogin = () => {
     try {
       await login(email, password)
       navigate('/app')
-    } catch (err) {
+    } catch {
       setError('Email o contraseña incorrectos')
     } finally {
       setCargando(false)
@@ -29,8 +29,8 @@ const PaginaLogin = () => {
   return (
     <div className="auth-page">
       <Navbar showSidebar={false} />
-      <div className="auth-bg" />
-      <div className="auth-overlay" />
+      <div className="auth-bg" aria-hidden="true" />
+      <div className="auth-overlay" aria-hidden="true" />
 
       <div className="auth-content">
         <h1 className="auth-hero-title">Tu bienestar día a día</h1>
@@ -41,27 +41,35 @@ const PaginaLogin = () => {
         </div>
         <div className="auth-card">
           <h2>Iniciar Sesión</h2>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate aria-label="Formulario de inicio de sesión">
             <div className="form-group">
-              <label>Email</label>
+              <label htmlFor="login-email">Email</label>
               <input
+                id="login-email"
                 type="email"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
                 required
               />
             </div>
             <div className="form-group">
-              <label>Contraseña</label>
+              <label htmlFor="login-password">Contraseña</label>
               <input
+                id="login-password"
                 type="password"
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
                 required
               />
             </div>
-            {error && <p className="auth-error">{error}</p>}
-            <button type="submit" className="auth-primary-btn" disabled={cargando}>
+            {error && (
+              <p className="auth-error" role="alert" aria-live="assertive">
+                {error}
+              </p>
+            )}
+            <button type="submit" className="auth-primary-btn" disabled={cargando} aria-busy={cargando}>
               {cargando ? 'Entrando...' : 'Iniciar Sesión'}
             </button>
           </form>

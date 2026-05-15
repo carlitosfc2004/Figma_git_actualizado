@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../data/supabase.js'
-import { useAuth } from '../data/authContext.jsx'
+import { useAuthStore } from '../stores/useAuthStore.js'
 import Navbar from '../components/Navbar.jsx'
 import './Paginas.css'
 
@@ -18,7 +18,7 @@ const camposVacios = {
 const PaginaEjercicioForm = () => {
   const { id } = useParams()
   const esEdicion = Boolean(id)
-  const { user } = useAuth()
+  const user = useAuthStore((s) => s.user)
   const navigate = useNavigate()
 
   const [form, setForm] = useState(camposVacios)
@@ -52,12 +52,12 @@ const PaginaEjercicioForm = () => {
     setCargando(false)
   }
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const { name, value } = e.target
-    setForm(prev => ({ ...prev, [name]: value }))
+    setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError(null)
 
@@ -79,18 +79,9 @@ const PaginaEjercicioForm = () => {
 
     let resultado
     if (esEdicion) {
-      resultado = await supabase
-        .from('ejercicios')
-        .update(payload)
-        .eq('id', id)
-        .select()
-        .single()
+      resultado = await supabase.from('ejercicios').update(payload).eq('id', id).select().single()
     } else {
-      resultado = await supabase
-        .from('ejercicios')
-        .insert(payload)
-        .select()
-        .single()
+      resultado = await supabase.from('ejercicios').insert(payload).select().single()
     }
 
     setGuardando(false)
@@ -105,43 +96,47 @@ const PaginaEjercicioForm = () => {
 
   return (
     <div className="list-page">
-      <div className="dashboard-bg" />
-      <div className="dashboard-overlay" />
+      <div className="dashboard-bg" aria-hidden="true" />
+      <div className="dashboard-overlay" aria-hidden="true" />
       <Navbar showSidebar={true} />
 
-      <main className="form-main">
+      <main className="form-main" id="main-content">
         <button
           className="back-btn"
           onClick={() => navigate(esEdicion ? `/app/ejercicios/${id}` : '/app/ejercicios')}
+          aria-label="Volver"
         >
           ← Volver
         </button>
 
         {cargando ? (
-          <div className="list-empty">
-            <span className="list-empty-icon">⏳</span>
+          <div className="list-empty" role="status" aria-live="polite">
+            <span className="list-empty-icon" aria-hidden="true">⏳</span>
             <p>Cargando ejercicio...</p>
           </div>
         ) : (
           <div className="auth-card form-card">
             <h2>{esEdicion ? '✏️ Editar Ejercicio' : '➕ Nuevo Ejercicio'}</h2>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} noValidate aria-label={esEdicion ? 'Formulario editar ejercicio' : 'Formulario nuevo ejercicio'}>
               <div className="form-group">
-                <label>Nombre *</label>
+                <label htmlFor="ej-nombre">Nombre <span aria-hidden="true">*</span></label>
                 <input
+                  id="ej-nombre"
                   type="text"
                   name="nombre"
                   value={form.nombre}
                   onChange={handleChange}
                   placeholder="Ej: Press de banca"
                   required
+                  aria-required="true"
                 />
               </div>
 
               <div className="form-group">
-                <label>Descripción</label>
+                <label htmlFor="ej-descripcion">Descripción</label>
                 <textarea
+                  id="ej-descripcion"
                   name="descripcion"
                   value={form.descripcion}
                   onChange={handleChange}
@@ -152,22 +147,19 @@ const PaginaEjercicioForm = () => {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Categoría</label>
-                  <select
-                    name="categoria"
-                    value={form.categoria}
-                    onChange={handleChange}
-                  >
+                  <label htmlFor="ej-categoria">Categoría</label>
+                  <select id="ej-categoria" name="categoria" value={form.categoria} onChange={handleChange}>
                     <option value="">— Sin categoría —</option>
-                    {CATEGORIAS.map(cat => (
+                    {CATEGORIAS.map((cat) => (
                       <option key={cat} value={cat}>{cat}</option>
                     ))}
                   </select>
                 </div>
 
                 <div className="form-group">
-                  <label>Duración (minutos)</label>
+                  <label htmlFor="ej-duracion">Duración (minutos)</label>
                   <input
+                    id="ej-duracion"
                     type="number"
                     name="duracion"
                     value={form.duracion}
@@ -180,8 +172,9 @@ const PaginaEjercicioForm = () => {
               </div>
 
               <div className="form-group">
-                <label>URL de imagen</label>
+                <label htmlFor="ej-imagen">URL de imagen</label>
                 <input
+                  id="ej-imagen"
                   type="url"
                   name="imagen"
                   value={form.imagen}
@@ -192,17 +185,17 @@ const PaginaEjercicioForm = () => {
 
               {form.imagen && (
                 <div className="form-preview">
-                  <img src={form.imagen} alt="Preview" />
+                  <img src={form.imagen} alt="Vista previa de la imagen del ejercicio" />
                 </div>
               )}
 
-              {error && <p className="auth-error">{error}</p>}
+              {error && (
+                <p className="auth-error" role="alert" aria-live="assertive">
+                  {error}
+                </p>
+              )}
 
-              <button
-                type="submit"
-                className="auth-primary-btn"
-                disabled={guardando}
-              >
+              <button type="submit" className="auth-primary-btn" disabled={guardando} aria-busy={guardando}>
                 {guardando
                   ? (esEdicion ? 'Guardando...' : 'Creando...')
                   : (esEdicion ? '💾 Guardar cambios' : '✅ Crear ejercicio')}

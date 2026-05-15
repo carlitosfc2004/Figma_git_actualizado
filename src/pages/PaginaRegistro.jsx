@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar.jsx'
-import { useAuth } from '../data/authContext.jsx'
+import { useAuthStore } from '../stores/useAuthStore.js'
 import './Paginas.css'
 
 const PaginaRegistro = () => {
@@ -11,8 +11,7 @@ const PaginaRegistro = () => {
   const [error, setError] = useState(null)
   const [mensaje, setMensaje] = useState(null)
   const [cargando, setCargando] = useState(false)
-  const { registro } = useAuth()
-  const navigate = useNavigate()
+  const registro = useAuthStore((s) => s.registro)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -33,7 +32,7 @@ const PaginaRegistro = () => {
     try {
       await registro(email, password)
       setMensaje('Registro exitoso, revisa tu email para confirmar la cuenta')
-    } catch (err) {
+    } catch {
       setError('Error al registrarse, prueba con otro email')
     } finally {
       setCargando(false)
@@ -43,8 +42,8 @@ const PaginaRegistro = () => {
   return (
     <div className="auth-page">
       <Navbar showSidebar={false} />
-      <div className="auth-bg" />
-      <div className="auth-overlay" />
+      <div className="auth-bg" aria-hidden="true" />
+      <div className="auth-overlay" aria-hidden="true" />
 
       <div className="auth-content">
         <h1 className="auth-hero-title">Tu bienestar día a día</h1>
@@ -55,37 +54,51 @@ const PaginaRegistro = () => {
         </div>
         <div className="auth-card">
           <h2>Registrarse</h2>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate aria-label="Formulario de registro">
             <div className="form-group">
-              <label>Email</label>
+              <label htmlFor="reg-email">Email</label>
               <input
+                id="reg-email"
                 type="email"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
                 required
               />
             </div>
             <div className="form-group">
-              <label>Contraseña</label>
+              <label htmlFor="reg-password">Contraseña</label>
               <input
+                id="reg-password"
                 type="password"
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="new-password"
                 required
               />
             </div>
             <div className="form-group">
-              <label>Confirmar Contraseña</label>
+              <label htmlFor="reg-confirmar">Confirmar Contraseña</label>
               <input
+                id="reg-confirmar"
                 type="password"
                 value={confirmar}
-                onChange={e => setConfirmar(e.target.value)}
+                onChange={(e) => setConfirmar(e.target.value)}
+                autoComplete="new-password"
                 required
               />
             </div>
-            {error && <p className="auth-error">{error}</p>}
-            {mensaje && <p className="auth-success">{mensaje}</p>}
-            <button type="submit" className="auth-primary-btn" disabled={cargando}>
+            {error && (
+              <p className="auth-error" role="alert" aria-live="assertive">
+                {error}
+              </p>
+            )}
+            {mensaje && (
+              <p className="auth-success" role="status" aria-live="polite">
+                {mensaje}
+              </p>
+            )}
+            <button type="submit" className="auth-primary-btn" disabled={cargando} aria-busy={cargando}>
               {cargando ? 'Registrando...' : 'Registrarse'}
             </button>
           </form>

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss/utilities";
 
 :root {
   --bg: #0d0d0d;
@@ -56,3 +56,22 @@ body {
 a { color: inherit; text-decoration: none; }
 button { cursor: pointer; font-family: 'Outfit', sans-serif; }
 input { font-family: 'Outfit', sans-serif; }
+
+/* Accesibilidad: oculto visualmente pero legible por lectores de pantalla */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Foco visible para navegación por teclado */
+:focus-visible {
+  outline: 2px solid var(--btn-bg);
+  outline-offset: 2px;
+}
