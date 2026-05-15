@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/useAuthStore.js'
 import { useRutinasStore } from '../stores/useRutinasStore.js'
 import Navbar from '../components/Navbar.jsx'
+import './Paginas.css'
 
 const NIVELES = ['Todos', 'Principiante', 'Intermedio', 'Avanzado']
 
@@ -21,14 +22,14 @@ const PaginaRutinas = () => {
 
   useEffect(() => {
     if (!user) { navigate('/login'); return }
-    cargar()
+    cargar(user.id)
   }, [user])
 
   const handleEliminar = async (id, nombre, e) => {
     e.stopPropagation()
     if (!confirm(`¿Seguro que quieres eliminar la rutina "${nombre}"?`)) return
     try {
-      await eliminar(id)
+      await eliminar(id, user.id)
     } catch {
       alert('Error al eliminar la rutina')
     }
@@ -46,7 +47,7 @@ const PaginaRutinas = () => {
       <div className="dashboard-overlay" aria-hidden="true" />
       <Navbar showSidebar={true} />
 
-      <main className="pt-20 px-4 pb-10 max-w-5xl mx-auto" id="main-content">
+      <main className="pt-20 px-4 pb-10 max-w-5xl mx-auto" style={{ position: 'relative', zIndex: 2 }} id="main-content">
 
         {/* Cabecera */}
         <div className="flex items-center justify-between mb-8 flex-wrap gap-4">

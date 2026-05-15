@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../data/supabase.js'
 import { useAuthStore } from '../stores/useAuthStore.js'
 import Navbar from '../components/Navbar.jsx'
+import './Paginas.css'
 
 const NIVELES = ['Principiante', 'Intermedio', 'Avanzado']
 const OBJETIVOS = ['Perder peso', 'Ganar masa muscular', 'Mejorar resistencia', 'Mantenimiento', 'Otro']
@@ -120,7 +121,7 @@ const PaginaRutinaForm = () => {
       <div className="dashboard-overlay" aria-hidden="true" />
       <Navbar showSidebar={true} />
 
-      <main className="pt-20 px-4 pb-10 max-w-xl mx-auto" id="main-content">
+      <main className="pt-20 px-4 pb-10 max-w-xl mx-auto" style={{ position: 'relative', zIndex: 2 }} id="main-content">
         <button
           className="flex items-center gap-2 text-sm mb-6 transition-opacity hover:opacity-70 focus:outline-none focus:ring-2 rounded"
           style={{ color: 'var(--text-muted)' }}

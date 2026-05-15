@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../data/supabase.js'
 import { useAuthStore } from '../stores/useAuthStore.js'
 import Navbar from '../components/Navbar.jsx'
+import './Paginas.css'
 
 const NIVEL_COLOR = {
   Principiante: '#4ade80',
@@ -49,7 +50,7 @@ const PaginaRutinaDetalle = () => {
       <div className="dashboard-overlay" aria-hidden="true" />
       <Navbar showSidebar={true} />
 
-      <main className="pt-20 px-4 pb-10 max-w-2xl mx-auto" id="main-content">
+      <main className="pt-20 px-4 pb-10 max-w-2xl mx-auto" style={{ position: 'relative', zIndex: 2 }} id="main-content">
         <button
           className="flex items-center gap-2 text-sm mb-6 transition-opacity hover:opacity-70 focus:outline-none focus:ring-2 rounded"
           style={{ color: 'var(--text-muted)' }}
