@@ -24,6 +24,7 @@ const PaginaEjercicioForm = () => {
   const [form, setForm] = useState(camposVacios)
   const [cargando, setCargando] = useState(esEdicion)
   const [guardando, setGuardando] = useState(false)
+  const [subiendoImagen, setSubiendoImagen] = useState(false)
   const [error, setError] = useState(null)
 
   useEffect(() => {
@@ -57,6 +58,33 @@ const PaginaEjercicioForm = () => {
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
+  const handleImageChange = async (e) => {
+    const archivo = e.target.files[0]
+    if (!archivo) return
+
+    setSubiendoImagen(true)
+    setError(null)
+
+    const nombreArchivo = `${user.id}/${Date.now()}-${archivo.name}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('imagenes-ejercicios')
+      .upload(nombreArchivo, archivo)
+
+    if (uploadError) {
+      setError(`Error al subir imagen: ${uploadError.message}`)
+      setSubiendoImagen(false)
+      return
+    }
+
+    const { data: urlData } = supabase.storage
+      .from('imagenes-ejercicios')
+      .getPublicUrl(nombreArchivo)
+
+    setForm((prev) => ({ ...prev, imagen: urlData.publicUrl }))
+    setSubiendoImagen(false)
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError(null)
@@ -73,7 +101,7 @@ const PaginaEjercicioForm = () => {
       descripcion: form.descripcion.trim() || null,
       categoria: form.categoria || null,
       duracion: form.duracion !== '' ? parseInt(form.duracion) : null,
-      imagen: form.imagen.trim() || null,
+      imagen: form.imagen || null,
       user_id: user.id,
     }
 
@@ -172,15 +200,19 @@ const PaginaEjercicioForm = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="ej-imagen">URL de imagen</label>
+                <label htmlFor="ej-imagen">Imagen</label>
                 <input
                   id="ej-imagen"
-                  type="url"
-                  name="imagen"
-                  value={form.imagen}
-                  onChange={handleChange}
-                  placeholder="https://..."
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  disabled={subiendoImagen}
                 />
+                {subiendoImagen && (
+                  <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 6 }}>
+                    Subiendo imagen...
+                  </p>
+                )}
               </div>
 
               {form.imagen && (
@@ -195,7 +227,7 @@ const PaginaEjercicioForm = () => {
                 </p>
               )}
 
-              <button type="submit" className="auth-primary-btn" disabled={guardando} aria-busy={guardando}>
+              <button type="submit" className="auth-primary-btn" disabled={guardando || subiendoImagen} aria-busy={guardando}>
                 {guardando
                   ? (esEdicion ? 'Guardando...' : 'Creando...')
                   : (esEdicion ? '💾 Guardar cambios' : '✅ Crear ejercicio')}
